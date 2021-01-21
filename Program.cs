@@ -1,55 +1,56 @@
 ﻿using System;
-using System.Reflection;
+//using System.Reflection;
 
 namespace TankiOnline
 {
-    /*interface ITechnic
+    enum Actions
+    {
+        Огонь,
+        Починка
+    }
+
+    interface ITechnic
     {
         int Armor { get; set; }
         int CurrentHP { get; set; }
         int Damage { get; set; }
-        int TotalHP { get; set; }
+        private int TotalHP { get { return TotalHP; } }
         void Shoot(Ship enemy);
         void Repair();
-    }*/
+    }
 
-    class Ship
+    class Ship : ITechnic
     {
-        /*public int Armor;
-        public int CurrentHP;
-        public int Damage;
-        private int TotalHP;*/
-
-        public int armor;
-        private int currentHP;
-        public int damage;
-        private int totalHP;
-
+        public int Armor { get; set; }
+        public int CurrentHP { get; set; }
+        public int Damage { get; set; }
+        private int TotalHP { get; set; }
 
         public Ship (int armor, int healthPoints, int damage)
         {
-            this.armor = armor;
-            totalHP = healthPoints;
-            currentHP = totalHP;
-            this.damage = damage;
+            Armor = armor;
+            TotalHP = healthPoints;
+            CurrentHP = TotalHP;
+            Damage = damage;
         }
 
         public void Shoot(Ship enemy)
         {
-            enemy.currentHP -= this.damage;
+            enemy.CurrentHP -= this.Damage;
+            enemy.Armor += 10;
         }
 
         public void Repair()
         {
-            if ((this.currentHP + 10) <= this.totalHP)
+            if ((this.CurrentHP + 10) <= this.TotalHP)
             {
-                this.currentHP += 10;
+                this.CurrentHP += 10;
             }
-            else if ((this.currentHP + 10) > this.totalHP && this.currentHP != this.totalHP)
+            else if ((this.CurrentHP + 10) > this.TotalHP && this.CurrentHP != this.TotalHP)
             {
-                this.currentHP = this.totalHP;
+                this.CurrentHP = this.TotalHP;
             }
-            else if (this.currentHP == this.totalHP)
+            else if (this.CurrentHP == this.TotalHP)
             {
                 Console.WriteLine("Вы не можете починиться, потому у вас Full HP");
             }
@@ -57,12 +58,12 @@ namespace TankiOnline
 
         public int GetHP ()
         {
-            return this.currentHP;
+            return this.CurrentHP;
         }
 
         public int GetTotalHP() 
         {
-            return this.totalHP;
+            return this.TotalHP;
         }
     }
 
@@ -98,8 +99,14 @@ namespace TankiOnline
                     // Ходит живой человек.
                     case 0:
                         Console.WriteLine($"Выберите требуемое действие:");
-                        Console.WriteLine($"1. Огонь");
-                        Console.WriteLine($"2. Ремонт");
+                        byte listNumber = 1;
+                        foreach (Actions action in Enum.GetValues(typeof(Actions)))
+                        {
+                            Console.WriteLine($"{listNumber}. {action}");
+                            listNumber++;
+                        }
+                        //Console.WriteLine($"1. Огонь");
+                        //Console.WriteLine($"2. Ремонт");
 
                         //Type myType = Type.GetType("TankiOnline.Ship", false, true);
                         //MethodInfo[] methods = myType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -131,6 +138,8 @@ namespace TankiOnline
                         Random randElem = new Random();
                         int randValue = randElem.Next(2);
 
+
+
                         if (randValue == 0)
                         {
                             //Стреляем
@@ -159,7 +168,10 @@ namespace TankiOnline
 
                 if (user.GetHP() <= 0 || computer.GetHP() <= 0)
                 {
-                    Console.Write($"Игра окончена! {(user.GetHP() > 0 ? "Победитель - человек" : "Победитель компьютер")}");
+                    Console.WriteLine($"Игра окончена! {(user.GetHP() > 0 ? "Победитель - человек" : "Победитель компьютер")}");
+
+                    Console.WriteLine($"Количество жизней компьютера = {computer.GetHP()}");
+                    Console.WriteLine($"Количество жизней игрока = {user.GetHP()} \n");
                     break;
                 }
                 else
