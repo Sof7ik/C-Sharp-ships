@@ -1,32 +1,49 @@
 ﻿using System;
+using System.Reflection;
 
 namespace TankiOnline
 {
+    /*interface ITechnic
+    {
+        int Armor { get; set; }
+        int CurrentHP { get; set; }
+        int Damage { get; set; }
+        int TotalHP { get; set; }
+        void Shoot(Ship enemy);
+        void Repair();
+    }*/
+
     class Ship
     {
-        public byte armor;
-        public int currentHP;
-        public byte damage;
+        /*public int Armor;
+        public int CurrentHP;
+        public int Damage;
+        private int TotalHP;*/
+
+        public int armor;
+        private int currentHP;
+        public int damage;
         private int totalHP;
 
-        public Ship (byte armor, int healthPoints, byte damage)
+
+        public Ship (int armor, int healthPoints, int damage)
         {
             this.armor = armor;
-            this.totalHP = healthPoints;
-            this.currentHP = this.totalHP;
+            totalHP = healthPoints;
+            currentHP = totalHP;
             this.damage = damage;
         }
 
         public void Shoot(Ship enemy)
         {
-            enemy.currentHP = (enemy.currentHP - this.damage);
+            enemy.currentHP -= this.damage;
         }
 
         public void Repair()
         {
             if ((this.currentHP + 10) <= this.totalHP)
             {
-                this.currentHP = (this.currentHP + 10);
+                this.currentHP += 10;
             }
             else if ((this.currentHP + 10) > this.totalHP && this.currentHP != this.totalHP)
             {
@@ -84,6 +101,16 @@ namespace TankiOnline
                         Console.WriteLine($"1. Огонь");
                         Console.WriteLine($"2. Ремонт");
 
+                        //Type myType = Type.GetType("TankiOnline.Ship", false, true);
+                        //MethodInfo[] methods = myType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
+                        //Console.WriteLine($"{methods.Length}");
+
+                        //foreach (MemberInfo mi in methods)
+                        //{
+                            //Console.WriteLine($"{mi}");
+                        //}
+
                         string act = Console.ReadLine();
 
                         switch (act)
@@ -107,14 +134,21 @@ namespace TankiOnline
                         if (randValue == 0)
                         {
                             //Стреляем
-                            Console.WriteLine("КОМПЬЮТЕР СТРЕЛЯЕТ");
+                            //Console.WriteLine("КОМПЬЮТЕР СТРЕЛЯЕТ");
                             computer.Shoot(user);
                         }
                         else if (randValue == 1)
                         {
                             //Лечимся
-                            Console.WriteLine("КОМПЬЮТЕР ХИЛЛИТСЯ");
-                            computer.Repair();
+                            //Console.WriteLine("КОМПЬЮТЕР ХИЛЛИТСЯ");
+                            if (computer.GetHP() == computer.GetTotalHP())
+                            {
+                                computer.Shoot(user);
+                            }
+                            else
+                            {
+                                computer.Repair();
+                            }
                         }
                         currentPlayer = 0;
                         break;
@@ -125,7 +159,7 @@ namespace TankiOnline
 
                 if (user.GetHP() <= 0 || computer.GetHP() <= 0)
                 {
-                    Console.Write($"Игра окончена! {(user.currentHP != 0 ? "Победитель - человек" : "Победитель компьютер")}");
+                    Console.Write($"Игра окончена! {(user.GetHP() > 0 ? "Победитель - человек" : "Победитель компьютер")}");
                     break;
                 }
                 else
